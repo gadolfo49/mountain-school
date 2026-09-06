@@ -1,51 +1,60 @@
-# MCS Transporte | Revisión técnica
+# MCS Transporte — MVP operativo
 
-**Mountain Creativity School · 6 de septiembre de 2026**
+Actualizado: 6 de septiembre de 2026.
 
-## Estado de la entrega
+## Estado actual
 
-**Piloto de evaluación, NO sistema de transporte operativo.** No transmite GPS real, no autentica familias y no envía notificaciones al teléfono. No introducir nombres de menores, domicilios privados ni credenciales. La revisión conserva y analiza el material de Claude, sin confundir las propuestas con funciones ya implementadas.
+El proyecto ya cuenta con un MVP operativo conectado al proyecto Supabase `MCS Transporte` y al iPhone institucional mediante Traccar Client. Se verificó un envío GPS real desde el iPhone hasta el receptor privado.
 
-Se distinguen tres piezas:
+La interfaz familiar vive en `transporte/app/` y el panel administrativo en `transporte/admin/`. GitHub Pages sirve la interfaz estática; Supabase ejecuta la lógica privada, la recepción GPS y la cola de avisos.
 
-| Pieza | Alcance |
-|---|---|
-| `original/` (en el ZIP) | Los dos archivos originales, sin modificar. |
-| `corregida/index.html` (en el ZIP) | El prototipo original con 29 cambios controlados: mejoras visuales, horario, estado de llegada, interpolación y tratamiento seguro de etiquetas. Se desactiva expresamente la conexión GPS pública. Sigue siendo una demostración. |
-| `web/` | Nuevo piloto modular y adaptable a móviles. Incluye planificador de ensayo, mapa, avisos locales y prueba visual del corte a las 8:30. No sustituye todas las funciones del original. |
+## Funciones implementadas
 
-`server/parent-snapshot.cjs` es una **política de servidor de referencia**, con adaptadores inyectables y pruebas unitarias. No es una API desplegada ni está conectada a la interfaz. Faltan los adaptadores reales de autenticación, permisos y posiciones.
+- Recepción GPS privada desde Traccar Client con credencial específica del dispositivo.
+- Seguimiento continuo habilitable para la unidad asignada a `Ruta AM Principal`.
+- Rutas, paradas, familias y viajes persistentes en PostgreSQL.
+- Enlaces privados por familia; los tokens se guardan solamente como SHA-256 en la base.
+- Vista familiar que muestra únicamente su parada, el autobús y el estado de su viaje.
+- Corte de ubicación del lado servidor de lunes a viernes entre 06:00 inclusive y 08:30 exclusive, zona `America/Santo_Domingo`.
+- ETA y distancia restante aproximadas a partir de la posición GPS y el orden de paradas.
+- Eventos automáticos: inicio de ruta, preparar al niño, autobús próximo, llegada a parada y llegada al colegio.
+- Web Push con VAPID almacenado en Supabase Vault, cola de trabajos y worker privado. El worker fue verificado por HTTPS; la entrega a un teléfono familiar requiere registrar una suscripción real.
+- Panel administrativo para agregar/quitar paradas, ver GPS, revisar distancias aproximadas y generar el enlace privado de cada familia.
 
-## Probar la interfaz
+## Seguridad
 
-Desde esta carpeta, con Python instalado:
+Las tablas operativas tienen RLS habilitado y no conceden acceso directo a `anon` ni `authenticated`. Las interfaces hablan con Edge Functions que validan tokens privados. La ubicación familiar se filtra en el servidor por horario y asignación, no solamente en el navegador. Las claves secretas de Supabase y la clave privada VAPID no están en GitHub.
 
-```sh
-python3 -m http.server 8000 --directory web
-```
+Los avisos INFO `rls_enabled_no_policy` del asesor de Supabase son intencionales en este diseño: las tablas no se consumen directamente desde el navegador; el backend usa acceso de servicio.
 
-Abrir `http://localhost:8000`. Para un sitio publicado se necesita HTTPS. Leaflet está fijado a la versión 1.9.4 con verificación de integridad; su descarga y las teselas del mapa necesitan Internet. En el ensayo, pulsar **Iniciar demostración** y **Probar 8:30**. Los nombres son alias ficticios y el reloj del ensayo está separado de la operación real.
+## Uso
 
-Los valores iniciales del mapa proceden del prototipo; no acreditan la ubicación exacta del colegio ni de hogares. El cálculo sigue siendo una aproximación, NO una ruta por calles. No se envían puntos a un servidor público de enrutamiento. Las teselas OSM se usan solo para visualizar este piloto; antes de operar se debe contratar o alojar un servicio apropiado.
+1. Abrir el panel administrativo con el enlace privado entregado fuera del repositorio.
+2. Confirmar el punto del colegio y agregar las paradas reales usando alias operativos.
+3. Entregar a cada familia únicamente su enlace privado.
+4. En iPhone, la familia puede añadir la PWA a la pantalla de inicio y activar notificaciones.
+5. Al iniciar una ruta real, activar `Seguimiento continuo` en Traccar Client. El servidor detecta la salida y procesa posiciones/eventos.
+6. Realizar una ruta de campo antes de incorporar familias de forma general.
 
-Se incluye manifiesto y un service worker para la estructura pública. No se almacenan respuestas de API, coordenadas ni teselas en ese caché. Esto no certifica la instalación ni el funcionamiento en segundo plano en iPhone o Android. El icono es provisional.
+## Límites pendientes de validar en campo
 
-## Ejecutar las pruebas de referencia
+- El punto del colegio actual procede del prototipo original y debe confirmarse físicamente.
+- Las paradas reales todavía no se han cargado.
+- El ETA actual es una aproximación: Haversine × 1,30 y velocidad operativa de referencia; no usa todavía un motor de calles/ tráfico en vivo.
+- La entrega Web Push todavía no se ha probado en el iPhone de una familia porque aún no existe una suscripción familiar real.
+- Falta probar seguimiento continuo con pantalla bloqueada, pérdida de 5G, ahorro de batería y un recorrido completo.
+- Los enlaces privados constituyen el acceso del MVP; para una fase de mayor escala conviene migrar a cuentas familiares con Supabase Auth.
+- Feriados/calendario escolar extraordinario y confirmación individual de abordaje/recepción del menor quedan para la siguiente iteración.
 
-Con Node.js 22 o compatible con `node:test`:
+## Privacidad operativa
 
-```sh
-node --test tests/policy.test.cjs
-```
+No subir nombres completos de menores, domicilios, tokens o claves a GitHub. En el panel usar alias. Los puntos reales de recogida viven en la base privada. Fuera de 06:00–08:30 la API familiar no devuelve coordenadas, aunque la administración interna pueda mantener supervisión separada.
 
-Resultado obtenido: **24 pruebas aprobadas**. Comprueban horario, datos GPS y contrato de respuesta usando adaptadores simulados. NO comprueban un despliegue de Supabase.
+## Componentes open source
 
-En el ZIP se incluyen además los guiones de auditoría del original y del navegador, junto con resultados y capturas. El piloto pasó 7 comprobaciones funcionales y 10 combinaciones de vista/tamaño, sin desbordamiento horizontal ni errores JavaScript observados. Las pruebas se hicieron en Chromium automatizado, con reloj/GPS/conexiones simulados y sin teselas externas. No se ensayó una ruta real ni notificaciones en teléfonos físicos.
+- Leaflet para el mapa.
+- OpenStreetMap como datos/cartografía base del MVP.
+- PostgreSQL/Supabase para datos, funciones y seguridad.
+- Traccar Client para emitir ubicación desde iPhone.
 
-## GitHub y producción
-
-El destino es una carpeta separada `transporte/` del repositorio existente `gadolfo49/mountain-school`, en una rama de revisión. No se sustituye su página principal. Una rama y una solicitud de revisión no equivalen a una aplicación desplegada en GitHub Pages. La interfaz pública de un futuro despliegue sería `transporte/web/`; el servidor privado debe ejecutarse en otra infraestructura.
-
-La conexión de Supabase mostró un proyecto inactivo. No se reactivó, no se crearon tablas ni funciones y no se modificaron usuarios, claves, costes o permisos. No hay un backend de transporte operativo verificado.
-
-Consultar [AUDITORIA.md](AUDITORIA.md) para los hallazgos y [ARQUITECTURA.md](ARQUITECTURA.md) para el diseño propuesto y la lista de aceptación. La licencia MIT adjunta se limita al código nuevo de este piloto; no reemplaza las licencias ni los derechos del material original o de terceros.
+Open source no implica operación sin costo ni SLA. Antes de crecer, revisar límites de hosting, mapas, datos móviles y notificaciones.
