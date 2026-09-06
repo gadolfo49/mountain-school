@@ -1,0 +1,4 @@
+[functions.mcs-gps]
+verify_jwt = false
+entrypoint = "./functions/mcs-gps/index.mjs"
+import_map = "./functions/mcs-gps/deno.json"
