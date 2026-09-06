@@ -1,0 +1,26 @@
+const test=require('node:test'),assert=require('node:assert/strict');
+const C=require('../web/core.js'),createSnapshot=require('../server/parent-snapshot.cjs');
+const T=t=>Date.parse('2026-09-07T'+t+'-04:00');
+for(const [time,open] of [['05:59:59.999',false],['06:00:00',true],['08:29:59.999',true],['08:30:00',false],['12:00:00',false]])test('Window '+time,()=>assert.equal(C.windowAt(T(time)).open,open));
+test('Weekend closed',()=>assert.equal(C.windowAt(Date.parse('2026-09-06T07:00:00-04:00')).open,false));
+test('UTC instant interpreted in Santo Domingo',()=>assert.equal(C.windowAt(Date.parse('2026-09-07T10:00:00Z')).open,true));
+test('Exact cutoff supplied',()=>assert.equal(C.windowAt(T('07:01:59.456')).closesAt,T('08:30:00')));
+const fix={lat:18.46,lng:-69.3,accuracy:5,capturedAt:T('07:00:00'),routeId:'r1'};
+test('Fresh fix',()=>assert.equal(C.validFix(fix,T('07:00:10')),true));
+test('Stale fix',()=>assert.equal(C.validFix(fix,T('07:00:31')),false));
+test('Future fix',()=>assert.equal(C.validFix({...fix,capturedAt:T('08:00:00')},T('07:00:00')),false));
+test('Invalid latitude',()=>assert.equal(C.validFix({...fix,lat:95},T('07:00:00')),false));
+test('Bad accuracy',()=>assert.equal(C.validFix({...fix,accuracy:200},T('07:00:00')),false));
+test('Half time means half segment, not 65%',()=>{let r=C.estimate([{lat:18,lng:-69},{lat:18.01,lng:-69}]);assert.ok(Math.abs(C.atElapsed(r,r.duration/2).lat-18.005)<1e-9)});
+test('Zero-distance route finite',()=>{let r=C.estimate([{lat:18,lng:-69},{lat:18,lng:-69}]);assert.equal(C.atElapsed(r,100).lat,18)});
+const access={userId:'p1',routeId:'r1',active:true,serviceDate:'2026-09-07'};
+function fixture(overrides={}){return createSnapshot({authenticate:async()=>({id:'p1'}),loadAccess:async()=>access,loadPosition:async()=>fix,clock:()=>T('07:00:00'),...overrides});}
+test('Unauthenticated forbidden',async()=>assert.equal((await fixture({authenticate:async()=>null})({routeId:'r1'})).status,401));
+test('Wrong route forbidden',async()=>assert.equal((await fixture()({routeId:'r2'})).status,403));
+test('Inactive membership forbidden',async()=>assert.equal((await fixture({loadAccess:async()=>({...access,active:false})})({routeId:'r1'})).status,403));
+test('Wrong day forbidden',async()=>assert.equal((await fixture({loadAccess:async()=>({...access,serviceDate:'2026-09-06'})})({routeId:'r1'})).status,403));
+test('Coordinates absent at cutoff',async()=>{let r=await fixture({clock:()=>T('08:30:00')})({routeId:'r1'});assert.equal(r.status,403);assert.equal(r.body.position,undefined)});
+test('Crossing cutoff during I/O denied',async()=>{let n=0;let r=await fixture({clock:()=>n++===0?T('08:29:59.999'):T('08:30:00')})({routeId:'r1'});assert.equal(r.status,403)});
+test('Live response allowlist and no caching',async()=>{let r=await fixture({loadPosition:async()=>({...fix,otherStudents:['NEVER RETURN'],driverSecret:'NO'})})({routeId:'r1'});assert.equal(r.body.status,'live');assert.equal(JSON.stringify(r).includes('NEVER RETURN'),false);assert.equal(r.body.position.driverSecret,undefined);assert.match(r.headers['Cache-Control'],/no-store/)});
+test('Stale response contains no coordinates',async()=>{let r=await fixture({clock:()=>T('07:01:00')})({routeId:'r1'});assert.equal(r.body.status,'no_fresh_signal');assert.equal(r.body.position,undefined)});
+test('Server error fails closed',async()=>{let r=await fixture({loadAccess:async()=>{throw Error('database unavailable')}})({routeId:'r1'});assert.equal(r.status,503);assert.equal(r.body.position,undefined)});
