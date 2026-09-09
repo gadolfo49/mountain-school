@@ -1,0 +1,10 @@
+{
+  "name": "Mountain Family",
+  "short_name": "Mountain Family",
+  "description": "Aplicación integral para familias, docentes y administración de Mountain Creativity School",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F4F8FC",
+  "theme_color": "#064A89"
+}
