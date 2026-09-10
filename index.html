@@ -7,8 +7,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Mountain Family">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
 <meta name="description" content="Mountain Family · Mountain Creativity School">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/mountain-logo-192.png">
+<link rel="icon" href="assets/mountain-logo-192.png">
 <link rel="stylesheet" href="styles-v2.css">
 <title>Mountain Family</title>
 </head>
@@ -17,7 +21,7 @@
 <header class="top"><div class="topin"><img class="brand-logo" src="assets/mountain-logo-192.png" alt="Mountain"><div class="brand"><b>Mountain Family</b><small>Mountain Creativity School</small></div><div class="spacer"></div><span id="userChip" class="chip">Acceso privado</span><button id="logoutBtn" class="btn soft hidden">Salir</button></div></header>
 <main class="wrap"><section id="home"></section><section id="routine" class="hidden"></section><section id="academic" class="hidden"></section><section id="messages" class="hidden"></section><section id="more" class="hidden"></section></main>
 <nav class="bottom" aria-label="Navegación"><button class="active" data-view="home"><span>⌂</span>Inicio</button><button data-view="routine"><span>◷</span>Jornada</button><button data-view="academic"><span>✦</span>CRECE</button><button data-view="messages"><span>✉</span>Comunicación</button><button data-view="more"><span>☰</span>Más</button></nav>
-<div id="modal" class="modal"><div id="sheet" class="sheet"></div></div><div id="toast" class="toast" role="status"></div>
+<div id="modal" class="modal"><div id="sheet" class="sheet"></div></div><div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app-v2.js"></script>
 </body>
