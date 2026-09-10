@@ -12,5 +12,13 @@
   "orientation": "any",
   "background_color": "#F4F8FC",
   "theme_color": "#064A89",
-  "categories": ["education", "productivity", "family"]
+  "categories": ["education", "productivity", "family"],
+  "icons": [
+    {
+      "src": "assets/mountain-logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
