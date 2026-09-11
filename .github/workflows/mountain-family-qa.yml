@@ -16,5 +16,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run exactly 50 integration contract tests
+      - name: Run 100 integration and security contract tests
         run: node --test tests/mountain-family.integration.test.mjs
