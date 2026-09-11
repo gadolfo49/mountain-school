@@ -1,5 +1,5 @@
-const CACHE='mountain-family-shell-v6';
-const CORE=['./','./index.html','./manifest.webmanifest','./styles-v2.css','./auth-v4.js','./app-v3.js','./assets/mountain-logo-192.png'];
+const CACHE='mountain-family-shell-v7';
+const CORE=['./','./index.html','./manifest.webmanifest','./styles-v2.css','./auth-v5.js','./app-v3.js','./assets/mountain-logo-192.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mountain-family-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',event=>{const r=event.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.hostname.includes('supabase.co')||u.pathname.includes('/storage/')||u.pathname.includes('/functions/'))return;if(r.mode==='navigate'){event.respondWith(fetch(r,{cache:'no-store'}).catch(()=>caches.match('./index.html')));return}if(u.origin===self.location.origin){event.respondWith(fetch(r).then(response=>{if(response.ok&&response.type==='basic')caches.open(CACHE).then(cache=>cache.put(r,response.clone()));return response}).catch(()=>caches.match(r)))}});
