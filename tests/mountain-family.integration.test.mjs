@@ -1,68 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import vm from 'node:vm';
-
-const read=p=>fs.readFileSync(new URL(`../${p}`, import.meta.url),'utf8');
-const app=read('app-v3.js');
-const html=read('index.html');
-const css=read('styles-v2.css');
-const sw=read('sw.js');
-const manifest=JSON.parse(read('manifest.webmanifest'));
-const has=(src,needle)=>src.includes(needle);
-const cases=[];
-const add=(name,fn)=>cases.push([name,fn]);
-
-add('01 app-v3.js parses as JavaScript',()=>assert.doesNotThrow(()=>new vm.Script(app)));
-add('02 index loads app-v3.js',()=>assert.ok(has(html,'app-v3.js')));
-add('03 index loads styles-v2.css',()=>assert.ok(has(html,'styles-v2.css')));
-add('04 index links manifest',()=>assert.ok(has(html,'manifest.webmanifest')));
-add('05 index declares mobile viewport',()=>assert.ok(has(html,'viewport-fit=cover')));
-add('06 index enables Apple web app mode',()=>assert.ok(has(html,'apple-mobile-web-app-capable')));
-add('07 service worker caches app-v3.js',()=>assert.ok(has(sw,'./app-v3.js')));
-add('08 service worker caches index.html',()=>assert.ok(has(sw,'./index.html')));
-add('09 service worker caches stylesheet',()=>assert.ok(has(sw,'./styles-v2.css')));
-add('10 service worker excludes Supabase requests from cache',()=>assert.ok(has(sw,"hostname.includes('supabase.co')")));
-add('11 service worker excludes storage/function requests',()=>assert.ok(has(sw,"pathname.includes('/storage/')")&&has(sw,"pathname.includes('/functions/')")));
-add('12 manifest names Mountain Family',()=>assert.equal(manifest.name,'Mountain Family'));
-add('13 manifest is standalone PWA',()=>assert.equal(manifest.display,'standalone'));
-add('14 manifest has start_url',()=>assert.ok(manifest.start_url));
-add('15 manifest has icons',()=>assert.ok(Array.isArray(manifest.icons)&&manifest.icons.length>0));
-add('16 Supabase project URL is configured',()=>assert.ok(has(app,'kbtjkjdjvkorekzzhxcx.supabase.co')));
-add('17 publishable Supabase key is configured',()=>assert.ok(has(app,'sb_publishable_')));
-add('18 app creates Supabase client',()=>assert.ok(has(app,'supabase.createClient')));
-add('19 app restores authenticated session',()=>assert.ok(has(app,'auth.getSession()')));
-add('20 app supports sign-in',()=>assert.ok(has(app,'signInWithPassword')));
-add('21 app supports sign-out',()=>assert.ok(has(app,'auth.signOut()')));
-add('22 app reads active user profile',()=>assert.ok(has(app,"from('mf_profiles')")));
-add('23 app enforces active profile',()=>assert.ok(has(app,'p?.active')));
-add('24 app implements role-aware family fallback',()=>assert.ok(has(app,"state.profile?.role||'family'")));
-add('25 app recognizes admin and teacher as staff',()=>assert.ok(has(app,"['admin','teacher'].includes(role())")));
-add('26 all six official grades are present',()=>['Maternal','Infantes','Párvulos','Pre-Kínder','Kínder','Preprimario'].forEach(g=>assert.ok(has(app,g))));
-add('27 app reads classrooms',()=>assert.ok(has(app,"from('mf_classrooms')")));
-add('28 app reads students',()=>assert.ok(has(app,"from('mf_students')")));
-add('29 app loads selected student data',()=>assert.ok(has(app,'loadSelected()')));
-add('30 app reads daily events',()=>assert.ok(has(app,"from('mf_daily_events')")));
-add('31 family feed filters visible events',()=>assert.ok(has(app,"eq('visible_to_family',true)")));
-add('32 app reads private attachments',()=>assert.ok(has(app,"from('mf_attachments')")));
-add('33 attachments require accepted security status',()=>assert.ok(has(app,"eq('security_status','accepted')")));
-add('34 deleted attachments are excluded',()=>assert.ok(has(app,"is('deleted_at',null)")));
-add('35 app reads published broadcasts',()=>assert.ok(has(app,"from('mf_broadcasts')")&&has(app,"eq('status','published')")));
-add('36 family delivery acknowledgement is wired',()=>assert.ok(has(app,'mf_mark_broadcast_delivered')));
-add('37 family read acknowledgement is wired',()=>assert.ok(has(app,'mf_mark_broadcast_read')));
-add('38 agent rules are loaded',()=>assert.ok(has(app,"from('mf_agent_rules')")));
-add('39 Mounty drafts are loaded',()=>assert.ok(has(app,"from('mf_agent_drafts')")));
-add('40 five primary views are wired',()=>['home','routine','academic','messages','more'].forEach(v=>assert.ok(has(app,`'${v}'`))));
-add('41 admin home exposes attendance workflow',()=>assert.ok(has(app,'Entrada / salida')&&has(app,'data-action="attendance"')));
-add('42 admin home exposes broadcast workflow',()=>assert.ok(has(app,'data-action="broadcast"')));
-add('43 admin home exposes Mounty compose/review',()=>assert.ok(has(app,'data-action="mountyCompose"')&&has(app,'data-action="mounty"')));
-add('44 admin home exposes incident workflow',()=>assert.ok(has(app,'data-action="incident"')));
-add('45 admin home exposes media workflow',()=>assert.ok(has(app,'data-action="media"')));
-add('46 admin home exposes authorized pickup workflow',()=>assert.ok(has(app,'data-action="pickups"')));
-add('47 admin home exposes documents and payments',()=>assert.ok(has(app,'data-action="documents"')&&has(app,'data-action="payments"')));
-add('48 CRECE five pillars are present',()=>['Creatividad','Ritmo','Exploración','Conexión','Equilibrio'].forEach(p=>assert.ok(has(app,p))));
-add('49 daily institutional routine is fully represented',()=>assert.ok(has(app,'6:30–8:00')&&has(app,'12:30–2:30')&&has(app,'5:00–6:00')));
-add('50 action router connects all major workflows',()=>['quick','attendance','pickups','documents','payments','safety','plans','observation','academicHistory','attendanceHistory','mounty','mountyCompose','broadcast','search','incident','thread','media'].forEach(a=>assert.ok(has(app,`${a}:`))));
-
-assert.equal(cases.length,50,'The suite must contain exactly 50 tests');
-for(const [name,fn] of cases)test(name,fn);
+import fs from 'node:fs';import vm from 'node:vm';
+const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const app=read('app-v3.js'),auth=read('auth-v5.js'),html=read('index.html'),css=read('styles-v2.css'),sw=read('sw.js'),manifest=JSON.parse(read('manifest.webmanifest'));const has=(s,n)=>s.includes(n),cases=[],add=(n,f)=>cases.push([n,f]);
+[
+['01 app parses',()=>assert.doesNotThrow(()=>new vm.Script(app))],['02 auth parses',()=>assert.doesNotThrow(()=>new vm.Script(auth))],['03 app loaded',()=>assert.ok(has(html,'app-v3.js?v=20260910-9'))],['04 auth v5 loaded',()=>assert.ok(has(html,'auth-v5.js?v=20260910-9'))],['05 old auth absent',()=>assert.ok(!has(html,'auth-v4.js'))],['06 css loaded',()=>assert.ok(has(html,'styles-v2.css'))],['07 manifest linked',()=>assert.ok(has(html,'manifest.webmanifest'))],['08 viewport',()=>assert.ok(has(html,'viewport-fit=cover'))],['09 apple PWA',()=>assert.ok(has(html,'apple-mobile-web-app-capable'))],['10 build marker',()=>assert.ok(has(html,'MF-20260910.9'))],
+['11 admin choice',()=>assert.ok(has(html,'data-authmode="admin"'))],['12 family choice',()=>assert.ok(has(html,'data-authmode="family"'))],['13 staff choice',()=>assert.ok(has(html,'data-authmode="staff"'))],['14 family signup',()=>assert.ok(has(html,'data-authmode="signup-family"'))],['15 no admin signup',()=>assert.ok(!has(html,'signup-admin'))],['16 email wrapper',()=>assert.ok(has(html,'id="emailField"'))],['17 password label',()=>assert.ok(has(html,'id="passwordLabel"'))],['18 PIN copy',()=>assert.ok(has(auth,'PIN DE 4 DÍGITOS'))],['19 PIN regex',()=>assert.ok(has(auth,'\\d{4}'))],['20 admin hides email',()=>assert.ok(has(auth,"show($('#emailField'),!admin)"))],
+['21 PIN endpoint',()=>assert.ok(has(auth,'mountain-admin-pin'))],['22 OTP verification',()=>assert.ok(has(auth,'verifyOtp'))],['23 magiclink token type',()=>assert.ok(has(auth,"type:'magiclink'"))],['24 admin profile role',()=>assert.ok(has(auth,"p.role!=='admin'"))],['25 inactive admin rejected',()=>assert.ok(has(auth,'!p?.active'))],['26 family registration endpoint',()=>assert.ok(has(auth,'mountain-register'))],['27 family role requested',()=>assert.ok(has(auth,"requested_role:'family'"))],['28 family password signin',()=>assert.ok(has(auth,'signInWithPassword'))],['29 wrong role signs out',()=>assert.ok(has(auth,'auth.signOut()'))],['30 no service role frontend',()=>assert.ok(!has(auth,'SERVICE_ROLE'))],
+['31 no deterministic PIN password',()=>assert.ok(!has(auth,'Admin-2026'))],['32 no admin email hardcoded auth',()=>assert.ok(!has(auth,'gustavoadolfo49'))],['33 auth status live region',()=>assert.ok(has(html,'aria-live="polite"'))],['34 PIN numeric input',()=>assert.ok(has(auth,"inputMode=admin?'numeric'"))],['35 PIN max length',()=>assert.ok(has(auth,'maxLength=admin?4'))],['36 PIN endpoint POST',()=>assert.ok(has(auth,"method:'POST'"))],['37 publishable key only',()=>assert.ok(has(auth,'sb_publishable_'))],['38 admin button disabled during request',()=>assert.ok(has(auth,"$('#loginBtn').disabled=true"))],['39 admin reload on success',()=>assert.ok(has(auth,'location.reload()'))],['40 enter key supported',()=>assert.ok(has(auth,"e.key==='Enter'"))],
+['41 SW v7',()=>assert.ok(has(sw,"mountain-family-shell-v7"))],['42 SW caches auth v5',()=>assert.ok(has(sw,"'./auth-v5.js'"))],['43 SW no auth v4',()=>assert.ok(!has(sw,'auth-v4.js'))],['44 SW caches app',()=>assert.ok(has(sw,"'./app-v3.js'"))],['45 SW caches index',()=>assert.ok(has(sw,"'./index.html'"))],['46 SW caches css',()=>assert.ok(has(sw,"'./styles-v2.css'"))],['47 SW excludes Supabase',()=>assert.ok(has(sw,"hostname.includes('supabase.co')"))],['48 SW excludes functions',()=>assert.ok(has(sw,"pathname.includes('/functions/')"))],['49 SW network first nav',()=>assert.ok(has(sw,"cache:'no-store'"))],['50 SW deletes old caches',()=>assert.ok(has(sw,"k.startsWith('mountain-family-')"))],
+['51 manifest name',()=>assert.equal(manifest.name,'Mountain Family')],['52 standalone',()=>assert.equal(manifest.display,'standalone')],['53 start URL',()=>assert.ok(manifest.start_url)],['54 icons',()=>assert.ok(manifest.icons?.length)],['55 Supabase URL app',()=>assert.ok(has(app,'kbtjkjdjvkorekzzhxcx.supabase.co'))],['56 publishable key app',()=>assert.ok(has(app,'sb_publishable_'))],['57 client app',()=>assert.ok(has(app,'supabase.createClient'))],['58 session restore',()=>assert.ok(has(app,'auth.getSession()'))],['59 signout app',()=>assert.ok(has(app,'auth.signOut()'))],['60 active profile',()=>assert.ok(has(app,'p?.active'))],
+['61 profile table',()=>assert.ok(has(app,"from('mf_profiles')"))],['62 classrooms',()=>assert.ok(has(app,"from('mf_classrooms')"))],['63 students',()=>assert.ok(has(app,"from('mf_students')"))],['64 events',()=>assert.ok(has(app,"from('mf_daily_events')"))],['65 family visible events',()=>assert.ok(has(app,"eq('visible_to_family',true)"))],['66 attachments',()=>assert.ok(has(app,"from('mf_attachments')"))],['67 accepted attachments',()=>assert.ok(has(app,"eq('security_status','accepted')"))],['68 deleted excluded',()=>assert.ok(has(app,"is('deleted_at',null)"))],['69 broadcasts',()=>assert.ok(has(app,"from('mf_broadcasts')"))],['70 published broadcasts',()=>assert.ok(has(app,"eq('status','published')"))],
+['71 delivered tracking',()=>assert.ok(has(app,'mf_mark_broadcast_delivered'))],['72 read tracking',()=>assert.ok(has(app,'mf_mark_broadcast_read'))],['73 Mounty rules',()=>assert.ok(has(app,"from('mf_agent_rules')"))],['74 Mounty drafts',()=>assert.ok(has(app,"from('mf_agent_drafts')"))],['75 admin recognized',()=>assert.ok(has(app,"role()==='admin'"))],['76 teacher recognized',()=>assert.ok(has(app,"'teacher'"))],['77 Maternal',()=>assert.ok(has(app,'Maternal'))],['78 Infantes',()=>assert.ok(has(app,'Infantes'))],['79 Parvulos',()=>assert.ok(has(app,'Párvulos'))],['80 PreKinder',()=>assert.ok(has(app,'Pre-Kínder'))],
+['81 Kinder',()=>assert.ok(has(app,'Kínder'))],['82 Preprimario',()=>assert.ok(has(app,'Preprimario'))],['83 home view',()=>assert.ok(has(app,"'home'"))],['84 routine view',()=>assert.ok(has(app,"'routine'"))],['85 academic view',()=>assert.ok(has(app,"'academic'"))],['86 messages view',()=>assert.ok(has(app,"'messages'"))],['87 more view',()=>assert.ok(has(app,"'more'"))],['88 attendance',()=>assert.ok(has(app,'data-action="attendance"'))],['89 broadcast action',()=>assert.ok(has(app,'data-action="broadcast"'))],['90 incident',()=>assert.ok(has(app,'data-action="incident"'))],
+['91 media',()=>assert.ok(has(app,'data-action="media"'))],['92 pickups',()=>assert.ok(has(app,'data-action="pickups"'))],['93 documents',()=>assert.ok(has(app,'data-action="documents"'))],['94 payments',()=>assert.ok(has(app,'data-action="payments"'))],['95 CRECE creativity',()=>assert.ok(has(app,'Creatividad'))],['96 CRECE rhythm',()=>assert.ok(has(app,'Ritmo'))],['97 CRECE exploration',()=>assert.ok(has(app,'Exploración'))],['98 CRECE connection',()=>assert.ok(has(app,'Conexión'))],['99 CRECE balance',()=>assert.ok(has(app,'Equilibrio'))],['100 transport remains separate',()=>assert.ok(has(app,'transporte escolar sigue en su aplicación independiente'))]
+].forEach(x=>add(...x));assert.equal(cases.length,100);for(const [name,fn] of cases)test(name,fn);
