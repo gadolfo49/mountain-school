@@ -10,15 +10,17 @@ check_200(){
   test "$code" = '200'
 }
 
-check_200 "$BASE/?smoke=20260911"
-grep -q 'auth-v5.js?v=20260910-9' /tmp/mf_body
-grep -q 'MF-20260910.9' /tmp/mf_body
-check_200 "$BASE/auth-v5.js?v=20260910-9"
+check_200 "$BASE/?smoke=20260911-10"
+grep -q 'auth-v5.js?v=20260911-10' /tmp/mf_body
+grep -q 'MF-20260911.10' /tmp/mf_body
+grep -q "document.getElementById('loginBtn').onclick=null" /tmp/mf_body
+check_200 "$BASE/auth-v5.js?v=20260911-10"
 grep -q 'mountain-admin-pin' /tmp/mf_body
-check_200 "$BASE/app-v3.js?v=20260910-9"
-check_200 "$BASE/sw.js?smoke=20260911"
+check_200 "$BASE/app-v3.js?v=20260911-10"
+grep -q "signInWithPassword" /tmp/mf_body
+check_200 "$BASE/sw.js?smoke=20260911-10"
 grep -q 'mountain-family-shell-v7' /tmp/mf_body
-check_200 "$BASE/manifest.webmanifest?v=20260910-9"
+check_200 "$BASE/manifest.webmanifest?v=20260911-10"
 
 code=$(curl -sS -o /tmp/pin_body -w '%{http_code}' -X POST "$SUPA/functions/v1/mountain-admin-pin" -H 'Content-Type: application/json' -H "apikey: $KEY" --data '{"pin":"123"}')
 test "$code" = '400'
@@ -28,4 +30,4 @@ code=$(curl -sS -o /tmp/register_body -w '%{http_code}' -X POST "$SUPA/functions
 test "$code" = '400'
 grep -q 'Correo inválido' /tmp/register_body
 
-echo 'LIVE_SMOKE_OK'
+echo 'LIVE_SMOKE_OK_SINGLE_LOGIN_OWNER'
