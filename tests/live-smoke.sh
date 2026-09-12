@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 BASE='https://gadolfo49.github.io/mountain-school'
+EDGE='https://kbtjkjdjvkorekzzhxcx.supabase.co/functions/v1'
+ORIGIN='https://gadolfo49.github.io'
 check_200(){ local url="$1"; code=$(curl -L -sS -o /tmp/mf_body -w '%{http_code}' "$url"); test "$code" = '200'; }
+check_cors(){
+  local fn="$1"
+  code=$(curl -sS -o /tmp/mf_cors_body -D /tmp/mf_cors_headers -w '%{http_code}' -X OPTIONS "$EDGE/$fn" \
+    -H "Origin: $ORIGIN" \
+    -H 'Access-Control-Request-Method: POST' \
+    -H 'Access-Control-Request-Headers: authorization,apikey,content-type,x-client-info')
+  test "$code" = '204'
+  grep -qi '^access-control-allow-origin: https://gadolfo49.github.io' /tmp/mf_cors_headers
+  grep -qi '^access-control-allow-methods: .*POST.*OPTIONS' /tmp/mf_cors_headers
+  grep -qi '^access-control-allow-headers: .*authorization' /tmp/mf_cors_headers
+}
 check_200 "$BASE/?smoke=final-20260912-r3"
 grep -q 'MF-FINAL-20260912' /tmp/mf_body
 grep -q 'mounty-guide-v1.js' /tmp/mf_body
@@ -44,4 +57,12 @@ grep -q "'./teacher-experience-v1.js'" /tmp/mf_body
 grep -q "'./notifications-v1.js'" /tmp/mf_body
 grep -q "'./final-flow-v1.js'" /tmp/mf_body
 ! grep -q "'./auth-v5.js'" /tmp/mf_body
-echo 'LIVE_SMOKE_OK_FINAL_R3'
+
+# Browser/iPhone preflight checks for every Edge Function used by Mounty Guide.
+check_cors mounty-compose
+check_cors mountain-media
+check_cors mounty-agent
+check_cors mounty-review
+check_cors mountain-thread
+
+echo 'LIVE_SMOKE_OK_FINAL_R3_WITH_MOUNTY_CORS'
