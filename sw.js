@@ -1,4 +1,4 @@
-const CACHE='mountain-family-shell-r5-3-principal-audit-20260912';
+const CACHE='mountain-family-shell-r5-5-managed-access-20260912';
 const CORE=['./','./index.html','./manifest.webmanifest','./styles-v2.css','./styles-a11y-v1.css','./runtime-v2.js','./network-guard-v1.js','./app-v3.js','./admin-gate.js','./access-v6.js','./admin-users-v1.js','./admin-data-v1.js','./admin-documents-v1.js','./family-documents-v1.js','./school-admin-v1.js','./academic-v2.js','./mounty-guide-v1.js','./teacher-experience-v1.js','./notifications-v1.js','./account-controls-v1.js','./final-flow-v1.js','./privacy.html','./account-deletion.html','./assets/mountain-logo-192.png','./assets/mountain-logo-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mountain-family-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
