@@ -2,13 +2,14 @@
 set -euo pipefail
 BASE='https://gadolfo49.github.io/mountain-school'
 check_200(){ local url="$1"; code=$(curl -L -sS -o /tmp/mf_body -w '%{http_code}' "$url"); test "$code" = '200'; }
-check_200 "$BASE/?smoke=20260912-14"
-grep -q 'MF-20260912.14' /tmp/mf_body
+check_200 "$BASE/?smoke=20260912-15"
+grep -q 'MF-20260912.15' /tmp/mf_body
 grep -q 'app-v3.js' /tmp/mf_body
 grep -q 'admin-gate.js' /tmp/mf_body
 grep -q 'access-v6.js' /tmp/mf_body
 grep -q 'admin-users-v1.js' /tmp/mf_body
 grep -q 'admin-data-v1.js' /tmp/mf_body
+grep -q 'admin-documents-v1.js' /tmp/mf_body
 check_200 "$BASE/app-v3.js?v=20260911-10"
 grep -q 'Maternal' /tmp/mf_body
 grep -q 'Infantes' /tmp/mf_body
@@ -28,6 +29,8 @@ grep -q 'Usuarios y accesos' /tmp/mf_body
 check_200 "$BASE/admin-data-v1.js?v=20260912-14"
 grep -q 'Registrar pago' /tmp/mf_body
 grep -q 'Agregar persona autorizada' /tmp/mf_body
-check_200 "$BASE/sw.js?smoke=20260912-14"
-grep -q 'mountain-family-shell-v9' /tmp/mf_body
-echo 'LIVE_SMOKE_OK_V14'
+check_200 "$BASE/admin-documents-v1.js?v=20260912-15"
+grep -q 'Nuevo documento' /tmp/mf_body
+check_200 "$BASE/sw.js?smoke=20260912-15"
+grep -q 'mountain-family-shell-v10' /tmp/mf_body
+echo 'LIVE_SMOKE_OK_V15'
