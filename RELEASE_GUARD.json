@@ -1,0 +1,50 @@
+{
+  "release": "MF-R5.1-MOUNTY-RELIABILITY-20260912",
+  "status": "protected-baseline",
+  "public_url": "https://gadolfo49.github.io/mountain-school/",
+  "architecture": {
+    "transport_app_is_separate": true,
+    "grades": ["Maternal", "Infantes", "Párvulos", "Pre-Kínder", "Kínder", "Preprimario"],
+    "auth": {
+      "admin": "mountain-admin-pin",
+      "family_registration": "mountain-register-cors",
+      "shared_runtime": "runtime-v2.js"
+    },
+    "mounty": {
+      "compose_version": 5,
+      "agent_version": 8,
+      "review_version": 6,
+      "thread_version": 4,
+      "media_version": 8,
+      "human_approval_required": true,
+      "strict_context_grounding": true,
+      "structured_error_reference": true,
+      "retry_transient_ai_failures": true
+    }
+  },
+  "forbidden_frontend_dependencies": [
+    "auth-v5.js",
+    "mountain-admin-simple",
+    "mountain-register'",
+    "mounty-qa-temp",
+    "final-role-qa-temp"
+  ],
+  "retired_edge_functions_must_return_410": [
+    "mountain-admin-simple",
+    "mountain-register",
+    "mounty-qa-temp",
+    "final-role-qa-temp"
+  ],
+  "required_invariants": [
+    "Mounty never sends AI output without human review",
+    "Mounty UI never exposes the raw Supabase non-2xx error string",
+    "Mounty retries transient upstream AI failures",
+    "Mounty errors include a request reference when available",
+    "Teachers are scoped by mf_classroom_staff",
+    "Families only access linked students",
+    "Legacy auth is not loaded by the production shell",
+    "Service worker does not cache Supabase function requests",
+    "Six early-childhood levels remain available",
+    "Transportation remains a separate application"
+  ]
+}
