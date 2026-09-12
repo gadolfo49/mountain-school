@@ -1,5 +1,5 @@
 {
-  "release": "MF-R5.5-MANAGED-ACCESS-20260912",
+  "release": "MF-R5.6-MOUNTY-TEXT-ASSIST-20260912",
   "status": "protected-baseline",
   "public_url": "https://gadolfo49.github.io/mountain-school/",
   "architecture": {
@@ -38,7 +38,7 @@
       "dialog_semantics": true
     },
     "mounty": {
-      "compose_version": 5,
+      "compose_version": 6,
       "agent_version": 8,
       "review_version": 6,
       "thread_version": 4,
@@ -47,7 +47,10 @@
       "strict_context_grounding": true,
       "structured_error_reference": true,
       "retry_transient_ai_failures": true,
-      "single_unified_audience_flow": true
+      "single_unified_audience_flow": true,
+      "text_assist_in_narrative_forms": true,
+      "evidence_draft_independent_of_recipient_availability": true,
+      "supported_purposes": ["family_message", "observation", "planning", "incident", "internal_note"]
     }
   },
   "forbidden_frontend_dependencies": [
@@ -78,6 +81,11 @@
     "Admin communication supports whole community, cycle, grade, one student and selected students",
     "Teacher communication supports grade, one student and selected students only inside assigned classrooms",
     "All dashboard communication entry points route through the same Mounty audience flow",
+    "Mounty text assistance is available inside narrative admin and teacher forms",
+    "Mounty can prepare evidence text even when no family recipient is currently linked",
+    "Zero recipients blocks sharing but never blocks Mounty drafting",
+    "Mounty assistance is not attached to passwords, identity fields, payment amounts, allergies or other structured sensitive fields",
+    "Mounty supports family messages, observations, planning, incidents and internal notes with purpose-specific prompts",
     "Mounty never sends AI output without human review",
     "Mounty UI never exposes the raw Supabase non-2xx error string",
     "Mounty retries transient upstream AI failures",
