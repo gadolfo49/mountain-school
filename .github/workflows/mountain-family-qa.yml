@@ -16,9 +16,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run protected integration, security and audience regression contracts
+      - name: Run protected integration, security, accessibility and audience contracts
         run: node --test tests/*.test.mjs
       - name: Wait for GitHub Pages deployment
         run: sleep 55
-      - name: Run R5.2 live deployment and browser smoke tests
+      - name: Run R5.3 live deployment and browser smoke tests
         run: bash tests/live-smoke.sh
