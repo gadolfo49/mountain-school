@@ -1,7 +1,11 @@
 (()=>{'use strict';
-const isNetwork=v=>/load failed|failed to fetch|networkerror|network request failed/i.test(String(v?.message||v||''));
-const show=()=>{const t=document.querySelector('#toast');if(t){t.textContent='La conexión se interrumpió por un momento. Intenta nuevamente.';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}};
-window.addEventListener('unhandledrejection',e=>{if(isNetwork(e.reason)){e.preventDefault();show()}});
-window.addEventListener('error',e=>{if(isNetwork(e.error||e.message)){e.preventDefault();show()}});
-window.MountainNetworkGuard={isNetwork,show};
+const isNetwork=v=>/load failed|failed to fetch|networkerror|network request failed|network connection was lost|internet connection appears to be offline|functionsfetcherror|functionsrelayerror/i.test(String(v?.message||v||''));
+let toastTimer=null;
+const toast=(message='La conexión se interrumpió por un momento. Intenta nuevamente.')=>{const t=document.querySelector('#toast');if(!t)return;t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200)};
+const updateConnectivity=()=>{const b=document.querySelector('#offlineBanner');if(!b)return;const offline=!navigator.onLine;b.classList.toggle('hidden',!offline);document.documentElement.dataset.network=offline?'offline':'online';if(!offline&&b.dataset.wasOffline==='1')toast('Conexión restablecida.');b.dataset.wasOffline=offline?'1':'0'};
+window.addEventListener('unhandledrejection',e=>{if(isNetwork(e.reason)){e.preventDefault();toast()}});
+window.addEventListener('error',e=>{if(isNetwork(e.error||e.message)){e.preventDefault();toast()}});
+window.addEventListener('offline',updateConnectivity);window.addEventListener('online',updateConnectivity);
+document.addEventListener('DOMContentLoaded',updateConnectivity);
+window.MountainNetworkGuard={isNetwork,show:toast,updateConnectivity};
 })();
