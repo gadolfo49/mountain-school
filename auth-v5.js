@@ -1,6 +1,5 @@
 (()=>{'use strict';
-const SURL='https://kbtjkjdjvkorekzzhxcx.supabase.co',SKEY='sb_publishable_4uce_DqQ7LpVOSnGAGnfmA_ZXEUWofq';
-const client=window.supabase?.createClient(SURL,SKEY);let mode='family';
+let mode='family';
 const $=s=>document.querySelector(s),show=(el,on)=>el?.classList.toggle('hidden',!on);
 function landing(){show($('#authLanding'),true);show($('#authForm'),false);$('#authMsg').textContent=''}
 function enterLocal(role){try{localStorage.setItem('mf-role',role)}catch(e){} location.href='./family/'}
@@ -9,10 +8,10 @@ function form(m){
   mode=m;show($('#authLanding'),false);show($('#authForm'),true);
   const signup=m==='signup-family';show($('#nameField'),signup);show($('#confirmField'),signup);show($('#emailField'),true);
   $('#passwordLabel').textContent='CONTRASEÑA';$('#password').type='password';$('#password').inputMode='text';$('#password').maxLength=128;$('#password').minLength=4;$('#password').autocomplete=signup?'new-password':'current-password';
-  const map={family:['Familia','Accede a la información de tus hijos.'],staff:['Maestra','Acceso para personal docente.'),'signup-family':['Registro de familia','Crea tu acceso familiar de forma sencilla.']};
+  const map={family:['Familia','Accede a la información de tus hijos.'],staff:['Maestra','Acceso para personal docente.'],'signup-family':['Registro de familia','Crea tu acceso familiar de forma sencilla.']};
   const item=map[m]||map.family;$('#authTitle').textContent=item[0];$('#authHint').textContent=item[1];$('#loginBtn').textContent=signup?'Crear cuenta y entrar':'Entrar';$('#authMsg').textContent='';$('#password').value='';
 }
-async function submit(){
+function submit(){
   if(mode==='signup-family'){
     const name=$('#fullName').value.trim(),email=$('#email').value.trim(),password=$('#password').value,p2=$('#password2').value;
     if(!name||!email)return void($('#authMsg').textContent='Completa tu nombre y correo.');
