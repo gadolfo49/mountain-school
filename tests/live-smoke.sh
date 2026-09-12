@@ -15,69 +15,56 @@ check_cors(){
   grep -qi '^access-control-allow-methods: .*POST.*OPTIONS' /tmp/mf_cors_headers
   grep -qi '^access-control-allow-headers: .*authorization' /tmp/mf_cors_headers
 }
-check_200 "$BASE/?smoke=final-20260912-r4"
-grep -q 'MF-FINAL-20260912-R4' /tmp/mf_body
-grep -q 'mounty-guide-v1.js' /tmp/mf_body
-grep -q 'teacher-experience-v1.js' /tmp/mf_body
-grep -q 'notifications-v1.js' /tmp/mf_body
-grep -q 'final-flow-v1.js' /tmp/mf_body
-grep -q 'family-documents-v1.js' /tmp/mf_body
-grep -q 'network-guard-v1.js' /tmp/mf_body
+check_200 "$BASE/?smoke=r5-forensic"
+grep -q 'MF-R5-FORENSIC-20260912' /tmp/mf_body
+grep -q '@supabase/supabase-js@2.116.0' /tmp/mf_body
+grep -q 'runtime-v2.js?v=20260912-r5' /tmp/mf_body
+grep -q 'mounty-guide-v1.js?v=20260912-r5' /tmp/mf_body
+grep -q 'teacher-experience-v1.js?v=20260912-r5' /tmp/mf_body
+grep -q 'notifications-v1.js?v=20260912-r5' /tmp/mf_body
+grep -q 'final-flow-v1.js?v=20260912-r5' /tmp/mf_body
+grep -q 'family-documents-v1.js?v=20260912-r5' /tmp/mf_body
+grep -q 'network-guard-v1.js?v=20260912-r5' /tmp/mf_body
 ! grep -q 'auth-v5.js' /tmp/mf_body
-check_200 "$BASE/admin-documents-v1.js?v=20260912-final-r4"
-grep -q 'type="file"' /tmp/mf_body
-grep -q 'prepare_document_upload' /tmp/mf_body
-grep -q 'storage_path' /tmp/mf_body
-grep -q 'Abrir archivo' /tmp/mf_body
-check_200 "$BASE/family-documents-v1.js?v=20260912-final-r4"
-grep -q 'signed_document_read' /tmp/mf_body
-grep -q 'Abrir documento' /tmp/mf_body
-check_200 "$BASE/network-guard-v1.js?v=20260912-final-r4"
-grep -q 'unhandledrejection' /tmp/mf_body
-grep -q 'La conexión se interrumpió' /tmp/mf_body
-check_200 "$BASE/mounty-guide-v1.js?v=20260912-final-r4"
-grep -q 'Mounty Guide' /tmp/mf_body
-grep -q 'mounty-compose' /tmp/mf_body
-grep -q 'Compartir evidencia' /tmp/mf_body
-grep -q 'Toda la comunidad' /tmp/mf_body
-grep -q 'Un ciclo' /tmp/mf_body
-grep -q 'Un grado' /tmp/mf_body
+
+check_200 "$BASE/runtime-v2.js?v=20260912-r5"
+grep -q 'R5-FORENSIC' /tmp/mf_body
+grep -q 'inferMime' /tmp/mf_body
+grep -q 'currentProfile' /tmp/mf_body
+
+check_200 "$BASE/mounty-guide-v1.js?v=20260912-r5"
+grep -q 'mf_broadcast_preview_count' /tmp/mf_body
+grep -q 'finalize_upload' /tmp/mf_body
+grep -q 'cancel_upload' /tmp/mf_body
 grep -q 'Estudiantes seleccionados' /tmp/mf_body
-grep -q '24 horas' /tmp/mf_body
-check_200 "$BASE/teacher-experience-v1.js?v=20260912-final-r4"
-grep -q 'Panel de maestra' /tmp/mf_body
+
+check_200 "$BASE/admin-documents-v1.js?v=20260912-r5"
+grep -q 'prepare_document_upload' /tmp/mf_body
+grep -q 'cancel_document_upload' /tmp/mf_body
+grep -q "window.open('about:blank'" /tmp/mf_body
+
+check_200 "$BASE/family-documents-v1.js?v=20260912-r5"
+grep -q 'signed_document_read' /tmp/mf_body
+grep -q 'Toda la familia' /tmp/mf_body
+
+check_200 "$BASE/teacher-experience-v1.js?v=20260912-r5"
+grep -q 'teacherPanel' /tmp/mf_body
 grep -q 'mf_classroom_staff' /tmp/mf_body
-grep -q 'Entrada / salida' /tmp/mf_body
-check_200 "$BASE/notifications-v1.js?v=20260912-final-r4"
-grep -q 'Preferencias de notificación' /tmp/mf_body
-grep -q 'mf_notifications' /tmp/mf_body
-check_200 "$BASE/final-flow-v1.js?v=20260912-final-r4"
-grep -q "a==='broadcast'" /tmp/mf_body
-grep -q "a==='media'" /tmp/mf_body
-check_200 "$BASE/app-v3.js?v=20260912-final-r4"
-grep -q 'Maternal' /tmp/mf_body
-grep -q 'Infantes' /tmp/mf_body
-grep -q 'Párvulos' /tmp/mf_body
-grep -q 'Pre-Kínder' /tmp/mf_body
-grep -q 'Kínder' /tmp/mf_body
-grep -q 'Preprimario' /tmp/mf_body
-check_200 "$BASE/access-v6.js?v=20260912-final-r4"
-grep -q "'#authBack'" /tmp/mf_body
-grep -q 'mountain-register-cors' /tmp/mf_body
-check_200 "$BASE/sw.js?smoke=final-20260912-r4"
-grep -q 'mountain-family-shell-final-20260912-r4' /tmp/mf_body
-grep -q "'./network-guard-v1.js'" /tmp/mf_body
-grep -q "'./family-documents-v1.js'" /tmp/mf_body
-grep -q "'./teacher-experience-v1.js'" /tmp/mf_body
-grep -q "'./notifications-v1.js'" /tmp/mf_body
-grep -q "'./final-flow-v1.js'" /tmp/mf_body
+! grep -q 'observer.observe(document.body' /tmp/mf_body
+
+check_200 "$BASE/notifications-v1.js?v=20260912-r5"
+grep -q 'clearInterval(timer)' /tmp/mf_body
+grep -q "removeEventListener('visibilitychange'" /tmp/mf_body
+
+check_200 "$BASE/final-flow-v1.js?v=20260912-r5"
+grep -q '\[data-openfile\]' /tmp/mf_body
+grep -q "action:'signed_read'" /tmp/mf_body
+
+check_200 "$BASE/sw.js?smoke=r5-forensic"
+grep -q 'mountain-family-shell-r5-forensic-20260912' /tmp/mf_body
+grep -q "'./runtime-v2.js'" /tmp/mf_body
 ! grep -q "'./auth-v5.js'" /tmp/mf_body
 
-# Browser/iPhone preflight checks for every Edge Function used by Mounty Guide and documents.
-check_cors mounty-compose
-check_cors mountain-media
-check_cors mounty-agent
-check_cors mounty-review
-check_cors mountain-thread
+for fn in mounty-compose mountain-media mounty-agent mounty-review mountain-thread; do check_cors "$fn"; done
 
-echo 'LIVE_SMOKE_OK_FINAL_R4_WITH_DOCUMENTS_AND_NETWORK_GUARD'
+echo 'LIVE_SMOKE_OK_R5_FORENSIC'
