@@ -1,5 +1,5 @@
 {
-  "release": "MF-R5.3-PRINCIPAL-AUDIT-20260912",
+  "release": "MF-R5.4-OFFICIAL-LOGO-20260912",
   "status": "protected-baseline",
   "public_url": "https://gadolfo49.github.io/mountain-school/",
   "architecture": {
@@ -13,6 +13,11 @@
       "shared_runtime": "runtime-v2.js",
       "minimum_new_or_recovered_password_length": 8,
       "legacy_login_compatibility_minimum": 6
+    },
+    "branding": {
+      "official_logo_192": "assets/mountain-logo-192.png",
+      "official_logo_512": "assets/mountain-logo-512.png",
+      "official_logo_source": "Mountain Creativity School logo supplied by owner on 2026-09-12"
     },
     "communication_audiences": ["all_families", "cycle", "classroom", "single_student", "selected_students"],
     "privacy": {
@@ -55,6 +60,7 @@
     "final-role-qa-temp"
   ],
   "required_invariants": [
+    "Official Mountain Creativity School logo remains the application brand asset",
     "Admin communication supports whole community, cycle, grade, one student and selected students",
     "Teacher communication supports grade, one student and selected students only inside assigned classrooms",
     "All dashboard communication entry points route through the same Mounty audience flow",
