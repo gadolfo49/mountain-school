@@ -1,9 +1,11 @@
 {
-  "release": "MF-R5.2-AUDIENCE-UNIFIED-20260912",
+  "release": "MF-R5.3-PRINCIPAL-AUDIT-20260912",
   "status": "protected-baseline",
   "public_url": "https://gadolfo49.github.io/mountain-school/",
   "architecture": {
     "transport_app_is_separate": true,
+    "delivery_model": "PWA",
+    "native_store_binary_present": false,
     "grades": ["Maternal", "Infantes", "Párvulos", "Pre-Kínder", "Kínder", "Preprimario"],
     "auth": {
       "admin": "mountain-admin-pin",
@@ -11,6 +13,17 @@
       "shared_runtime": "runtime-v2.js"
     },
     "communication_audiences": ["all_families", "cycle", "classroom", "single_student", "selected_students"],
+    "privacy": {
+      "public_policy": "privacy.html",
+      "external_deletion_resource": "account-deletion.html",
+      "in_app_family_deletion_request": "mountain-account-deletion-request"
+    },
+    "accessibility": {
+      "focus_visible": true,
+      "reduced_motion": true,
+      "offline_status": true,
+      "dialog_semantics": true
+    },
     "mounty": {
       "compose_version": 5,
       "agent_version": 8,
@@ -25,7 +38,9 @@
     }
   },
   "forbidden_frontend_dependencies": [
+    "auth-v4.js",
     "auth-v5.js",
+    "app-v2.js",
     "mountain-admin-simple",
     "mountain-register'",
     "mounty-qa-temp",
@@ -50,6 +65,11 @@
     "Legacy auth is not loaded by the production shell",
     "Service worker does not cache Supabase function requests",
     "Six early-childhood levels remain available",
-    "Transportation remains a separate application"
+    "Transportation remains a separate application",
+    "Privacy policy is reachable before sign-in and inside the app",
+    "Family users can initiate account deletion inside the app",
+    "An external account deletion request resource is publicly reachable",
+    "Production exposes an explicit offline state and keyboard focus visibility",
+    "Native App Store or Play Store readiness is not claimed until native packaging exists"
   ]
 }
