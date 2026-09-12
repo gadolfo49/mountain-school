@@ -9,7 +9,7 @@ const html=read('index.html');
 const sw=read('sw.js');
 const guard=JSON.parse(read('RELEASE_GUARD.json'));
 
-test('R5.3 principal audit marker is published',()=>assert.ok(html.includes('MF-R5.3-PRINCIPAL-AUDIT-20260912')));
+test('R5.5 managed access marker is published',()=>assert.ok(html.includes('MF-R5.5-MANAGED-ACCESS-20260912')));
 test('release guard protects all five audience levels',()=>assert.deepEqual(guard.architecture.communication_audiences,['all_families','cycle','classroom','single_student','selected_students']));
 test('Mounty exposes whole community',()=>assert.ok(guide.includes('Toda la comunidad')));
 test('Mounty exposes cycle',()=>assert.ok(guide.includes('Un ciclo')));
@@ -21,5 +21,5 @@ test('single student requires explicit student selection',()=>assert.ok(guide.in
 test('dashboard Crear con Mounty is intercepted by unified flow',()=>assert.ok(finalFlow.includes("['broadcast','mountyCompose']")));
 test('broadcast is intercepted by unified flow',()=>assert.ok(finalFlow.includes("['broadcast','mountyCompose']")));
 test('media evidence is intercepted by unified flow',()=>assert.ok(finalFlow.includes("a==='media'")));
-test('service worker keeps R5.3 audited release',()=>assert.ok(sw.includes('mountain-family-shell-r5-3-principal-audit-20260912')));
+test('service worker keeps R5.5 managed access release',()=>assert.ok(sw.includes('mountain-family-shell-r5-5-managed-access-20260912')));
 test('human review remains mandatory',()=>assert.equal(guard.architecture.mounty.human_approval_required,true));
