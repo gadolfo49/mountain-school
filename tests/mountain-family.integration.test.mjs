@@ -7,14 +7,14 @@ const base=new URL('../',import.meta.url);
 const read=p=>fs.readFileSync(new URL(p,base),'utf8');
 const exists=p=>fs.existsSync(new URL(p,base));
 const files={
- runtime:read('runtime-v2.js'),network:read('network-guard-v1.js'),app:read('app-v3.js'),gate:read('admin-gate.js'),access:read('access-v6.js'),users:read('admin-users-v1.js'),adminData:read('admin-data-v1.js'),docs:read('admin-documents-v1.js'),familyDocs:read('family-documents-v1.js'),school:read('school-admin-v1.js'),academic:read('academic-v2.js'),guide:read('mounty-guide-v1.js'),teacher:read('teacher-experience-v1.js'),notifications:read('notifications-v1.js'),accountControls:read('account-controls-v1.js'),finalFlow:read('final-flow-v1.js'),a11y:read('styles-a11y-v1.css'),privacy:read('privacy.html'),deletion:read('account-deletion.html'),sw:read('sw.js'),html:read('index.html')
+ runtime:read('runtime-v2.js'),network:read('network-guard-v1.js'),app:read('app-v3.js'),gate:read('admin-gate.js'),access:read('access-v6.js'),users:read('admin-users-v1.js'),adminData:read('admin-data-v1.js'),docs:read('admin-documents-v1.js'),familyDocs:read('family-documents-v1.js'),school:read('school-admin-v1.js'),academic:read('academic-v2.js'),guide:read('mounty-guide-v1.js'),assist:read('mounty-assist-v1.js'),teacher:read('teacher-experience-v1.js'),notifications:read('notifications-v1.js'),accountControls:read('account-controls-v1.js'),finalFlow:read('final-flow-v1.js'),a11y:read('styles-a11y-v1.css'),privacy:read('privacy.html'),deletion:read('account-deletion.html'),sw:read('sw.js'),html:read('index.html')
 };
 const manifest=JSON.parse(read('manifest.webmanifest'));
 const guard=JSON.parse(read('RELEASE_GUARD.json'));
 const has=(s,n)=>s.includes(n),contracts=[],add=(n,f)=>contracts.push([n,f]),contains=(f,t)=>()=>assert.ok(has(files[f],t),`${f} must contain ${t}`),notContains=(f,t)=>()=>assert.equal(has(files[f],t),false,`${f} must not contain ${t}`);
 for(const [name,source] of Object.entries(files))if(!['html','sw','a11y','privacy','deletion'].includes(name))add(`${name} parses`,()=>assert.doesNotThrow(()=>new vm.Script(source)));
 
-add('protected release marker',()=>assert.equal(guard.release,'MF-R5.5-MANAGED-ACCESS-20260912'));
+add('protected release marker',()=>assert.equal(guard.release,'MF-R5.6-MOUNTY-TEXT-ASSIST-20260912'));
 add('protected baseline status',()=>assert.equal(guard.status,'protected-baseline'));
 add('delivery model remains PWA',()=>assert.equal(guard.architecture.delivery_model,'PWA'));
 add('native store binary not falsely claimed',()=>assert.equal(guard.architecture.native_store_binary_present,false));
@@ -32,15 +32,21 @@ add('external deletion invariant',()=>assert.equal(guard.architecture.privacy.ex
 add('in-app deletion invariant',()=>assert.equal(guard.architecture.privacy.in_app_family_deletion_request,'mountain-account-deletion-request'));
 add('focus visibility invariant',()=>assert.equal(guard.architecture.accessibility.focus_visible,true));
 add('offline status invariant',()=>assert.equal(guard.architecture.accessibility.offline_status,true));
+add('Mounty compose v6 protected',()=>assert.equal(guard.architecture.mounty.compose_version,6));
 add('Mounty human approval invariant',()=>assert.equal(guard.architecture.mounty.human_approval_required,true));
 add('Mounty strict grounding invariant',()=>assert.equal(guard.architecture.mounty.strict_context_grounding,true));
 add('Mounty structured error invariant',()=>assert.equal(guard.architecture.mounty.structured_error_reference,true));
 add('Mounty retry invariant',()=>assert.equal(guard.architecture.mounty.retry_transient_ai_failures,true));
 add('Mounty unified audience flow invariant',()=>assert.equal(guard.architecture.mounty.single_unified_audience_flow,true));
+add('Mounty narrative assist invariant',()=>assert.equal(guard.architecture.mounty.text_assist_in_narrative_forms,true));
+add('Mounty evidence drafting independent of recipients',()=>assert.equal(guard.architecture.mounty.evidence_draft_independent_of_recipient_availability,true));
+add('Mounty purpose-specific contracts',()=>assert.deepEqual(guard.architecture.mounty.supported_purposes,['family_message','observation','planning','incident','internal_note']));
 
-add('R5.5 marker',contains('html','MF-R5.5-MANAGED-ACCESS-20260912'));
+add('R5.6 marker',contains('html','MF-R5.6-MOUNTY-TEXT-ASSIST-20260912'));
 add('Supabase dependency pinned',contains('html','@supabase/supabase-js@2.116.0'));
 add('runtime loads before app',()=>assert.ok(files.html.indexOf('runtime-v2.js')<files.html.indexOf('app-v3.js')));
+add('Mounty assist loaded after Guide',()=>assert.ok(files.html.indexOf('mounty-guide-v1.js')<files.html.indexOf('mounty-assist-v1.js')));
+add('Mounty assist loaded before final flow',()=>assert.ok(files.html.indexOf('mounty-assist-v1.js')<files.html.indexOf('final-flow-v1.js')));
 add('legacy auth absent from shell',notContains('html','auth-v5.js'));
 add('public signup absent from shell',notContains('html','signup-family'));
 add('public signup copy absent from shell',notContains('html','Registrarme como familia'));
@@ -57,6 +63,8 @@ add('account deletion link before sign in',contains('html','account-deletion.htm
 add('account controls R5.5 loaded',contains('html','account-controls-v1.js?v=20260912-r5-5'));
 add('managed access R5.5 loaded',contains('html','access-v6.js?v=20260912-r5-5'));
 add('admin users R5.5 loaded',contains('html','admin-users-v1.js?v=20260912-r5-5'));
+add('Mounty assist R5.6 loaded',contains('html','mounty-assist-v1.js?v=20260912-r5-6'));
+add('final flow R5.6 loaded',contains('html','final-flow-v1.js?v=20260912-r5-6'));
 add('accessibility layer loaded',contains('html','styles-a11y-v1.css?v=20260912-r5-3'));
 add('offline status element',contains('html','id="offlineBanner"'));
 add('dialog semantic',contains('html','aria-modal="true"'));
@@ -64,7 +72,7 @@ add('skip link',contains('html','Saltar al contenido'));
 add('runtime shared client',contains('runtime','window.supabase.createClient=(url,key,options)=>url===URL&&key===KEY?sb'));
 add('runtime profile cache',contains('runtime','currentProfile'));
 add('runtime auth events',contains('runtime','mountain:auth'));
-add('runtime R5.1 reliability retained',contains('runtime','R5.1-MOUNTY-RELIABILITY'));
+add('runtime reliability retained',contains('runtime','R5.1-MOUNTY-RELIABILITY'));
 add('runtime parses Edge Function bodies',contains('runtime','parseFunctionError'));
 add('runtime centralized invoke',contains('runtime','invokeFunction'));
 add('runtime refreshes 401 session',contains('runtime','refreshSession'));
@@ -82,12 +90,30 @@ add('payment validation',contains('adminData','amount<=0'));add('pickup validati
 add('academic core domains',()=>{for(const x of ['Lenguaje','Cognición','Socioemocional','Psicomotricidad fina','Psicomotricidad gruesa','Matemáticas','Lectoescritura','Inglés','Creatividad','Autonomía'])assert.ok(has(files.academic,x))});
 
 add('document physical file required',contains('docs','Selecciona el archivo que deseas guardar.'));add('document signed upload',contains('docs','prepare_document_upload'));add('document rollback',contains('docs','cancel_document_upload'));add('family signed document read',contains('familyDocs','signed_document_read'));
-add('Mounty centralized function invoke',contains('guide','rt.invokeFunction'));add('Mounty compose retries',contains('guide',"invoke('mounty-compose',body,{retry:true})"));add('Mounty no raw functions.invoke compose',notContains('guide',"sb.functions.invoke('mounty-compose'"));add('Mounty displays request reference',contains('guide','Referencia:'));add('Mounty generating state',contains('guide','Mounty está redactando…'));add('Mounty max context',contains('guide','maxlength="5000"'));add('Mounty selected audience validation',contains('guide','Selecciona al menos un estudiante.'));add('Mounty single student validation',contains('guide','Selecciona un estudiante.'));add('Mounty previews recipients',contains('guide','mf_broadcast_preview_count'));add('Mounty zero recipient guard',contains('guide','No hay familias activas vinculadas'));add('Mounty teacher classroom scope',contains('guide',"from('mf_classroom_staff')"));add('Mounty media prepare',contains('guide',"action:'prepare_upload'"));add('Mounty media finalize',contains('guide',"action:'finalize_upload'"));add('Mounty media cancel',contains('guide',"action:'cancel_upload'"));add('Mounty draft rollback',contains('guide',".delete().eq('id',broadcastId).eq('status','draft')"));add('Mounty human review',contains('guide','Revísalo antes de enviar'));
+add('Mounty centralized function invoke',contains('guide','rt.invokeFunction'));add('Mounty compose retries',contains('guide',"invoke('mounty-compose',body,{retry:true})"));add('Mounty no raw functions.invoke compose',notContains('guide',"sb.functions.invoke('mounty-compose'"));add('Mounty displays request reference',contains('guide','Referencia:'));add('Mounty generating state',contains('guide','Mounty está redactando…'));add('Mounty max context',contains('guide','maxlength="5000"'));add('Mounty selected audience validation',contains('guide','Selecciona al menos un estudiante.'));add('Mounty single student validation',contains('guide','Selecciona un estudiante.'));add('Mounty previews recipients',contains('guide','mf_broadcast_preview_count'));add('Mounty teacher classroom scope',contains('guide',"from('mf_classroom_staff')"));add('Mounty media prepare',contains('guide',"action:'prepare_upload'"));add('Mounty media finalize',contains('guide',"action:'finalize_upload'"));add('Mounty media cancel',contains('guide',"action:'cancel_upload'"));add('Mounty draft rollback',contains('guide',".delete().eq('id',broadcastId).eq('status','draft')"));add('Mounty human review',contains('guide','Revísalo antes de enviar'));
 for(const x of ['Toda la comunidad','Un ciclo','Un grado','Un estudiante','Estudiantes seleccionados','24 horas'])add(`Mounty UI ${x}`,contains('guide',x));
-add('single student maps safely to selected students backend model',()=>assert.ok(has(files.guide,"a.type==='single_student'")&&has(files.guide,"type:'selected_students'")));add('legacy dashboard Mounty Compose routes to unified flow',contains('finalFlow',"['broadcast','mountyCompose']"));
+add('single student maps safely to selected students backend model',()=>assert.ok(has(files.guide,"a.type==='single_student'")&&has(files.guide,"type:'selected_students'")));
+add('legacy dashboard Mounty Compose routes to unified flow',contains('finalFlow',"['broadcast','mountyCompose']"));
+add('media route prefers Mounty Text Assist',contains('finalFlow','window.MountyAssist?.evidence'));
+add('Mounty assist observation target',contains('assist','oaNote'));
+add('Mounty assist next-goal target',contains('assist','oaGoal'));
+add('Mounty assist planning target',contains('assist','lpTheme'));
+add('Mounty assist does not decorate planning title',notContains('assist','lpTitle:{purpose'));
+add('Mounty assist supports observation purpose',contains('assist',"purpose:'observation'"));
+add('Mounty assist supports planning purpose',contains('assist',"purpose:'planning'"));
+add('Mounty assist supports incident purpose',contains('assist',"purpose:'incident'"));
+add('Mounty assist supports family message purpose',contains('assist',"purpose:'family_message'"));
+add('Mounty assist excludes sensitive structured fields',()=>{for(const x of ['alerg','contrase','monto','correo','identific'])assert.ok(has(files.assist,x))});
+add('Mounty assist narrative selector excludes generic text inputs',contains('assist',"querySelectorAll('#sheet textarea,#oaGoal')"));
+add('Mounty evidence draft button',contains('assist','Preparar texto con Mounty'));
+add('Mounty evidence share button',contains('assist','Compartir ahora'));
+add('Mounty evidence zero recipient drafting copy',contains('assist','Puedes seguir preparando el texto'));
+add('Mounty evidence recipient count',contains('assist','mf_broadcast_preview_count'));
+add('Mounty internal evidence button intercepted',contains('assist',"closest?.('#mgEvidence')"));
+add('Mounty evidence still requires human review',contains('assist','Revísalo y edítalo antes de compartir'));
 add('teacher observer scoped',notContains('teacher','observer.observe(document.body'));add('teacher render guard',contains('teacher','teacherPanel'));add('teacher classroom staff scope',contains('teacher',"from('mf_classroom_staff')"));add('notification timer cleanup',contains('notifications','clearInterval(timer)'));add('notification listener cleanup',contains('notifications',"removeEventListener('visibilitychange'"));
 add('account deletion request uses authenticated endpoint',contains('accountControls','mountain-account-deletion-request'));add('account deletion confirmation exists',contains('accountControls','¿Deseas solicitar la eliminación'));add('public privacy policy explains data categories',contains('privacy','Datos que puede tratar la aplicación'));add('public privacy policy links deletion resource',contains('privacy','account-deletion.html'));add('external deletion page invokes public endpoint',contains('deletion','mountain-account-deletion-public'));add('external deletion page has identity fields',()=>assert.ok(has(files.deletion,'deleteName')&&has(files.deletion,'deleteEmail')));
 add('offline network listener',contains('network',"addEventListener('offline'"));add('online network listener',contains('network',"addEventListener('online'"));add('focus-visible accessibility style',contains('a11y',':focus-visible'));add('reduced motion accessibility style',contains('a11y','prefers-reduced-motion'));add('forced colors accessibility style',contains('a11y','forced-colors'));add('attachment signed read',contains('finalFlow',"action:'signed_read'"));add('attachment Safari tab',contains('finalFlow',"window.open('about:blank'"));add('network rejected promises',contains('network','unhandledrejection'));add('PWA standalone',()=>assert.equal(manifest.display,'standalone'));
-add('R5.5 service worker cache',contains('sw','mountain-family-shell-r5-5-managed-access-20260912'));add('SW caches runtime',contains('sw',"'./runtime-v2.js'"));add('SW caches account controls',contains('sw',"'./account-controls-v1.js'"));add('SW caches privacy page',contains('sw',"'./privacy.html'"));add('SW caches a11y stylesheet',contains('sw',"'./styles-a11y-v1.css'"));add('SW caches official 512 logo',contains('sw',"'./assets/mountain-logo-512.png'"));add('SW excludes Supabase',contains('sw',"hostname.includes('supabase.co')"));add('SW no legacy auth',notContains('sw','auth-v5.js'));
+add('R5.6 service worker cache',contains('sw','mountain-family-shell-r5-6-mounty-text-assist-20260912'));add('SW caches runtime',contains('sw',"'./runtime-v2.js'"));add('SW caches Mounty assist',contains('sw',"'./mounty-assist-v1.js'"));add('SW caches account controls',contains('sw',"'./account-controls-v1.js'"));add('SW caches privacy page',contains('sw',"'./privacy.html'"));add('SW caches a11y stylesheet',contains('sw',"'./styles-a11y-v1.css'"));add('SW caches official 512 logo',contains('sw',"'./assets/mountain-logo-512.png'"));add('SW excludes Supabase',contains('sw',"hostname.includes('supabase.co')"));add('SW no legacy auth',notContains('sw','auth-v5.js'));
 for(const [name,source] of Object.entries(files))if(!['html','sw','a11y','privacy','deletion'].includes(name))add(`${name} no malformed quote entity`,()=>assert.equal(/&quot(?!;)/.test(source),false));
 for(const [name,fn] of contracts)test(name,fn);
