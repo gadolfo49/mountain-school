@@ -10,7 +10,9 @@
     "auth": {
       "admin": "mountain-admin-pin",
       "family_registration": "mountain-register-cors",
-      "shared_runtime": "runtime-v2.js"
+      "shared_runtime": "runtime-v2.js",
+      "minimum_new_or_recovered_password_length": 8,
+      "legacy_login_compatibility_minimum": 6
     },
     "communication_audiences": ["all_families", "cycle", "classroom", "single_student", "selected_students"],
     "privacy": {
@@ -70,6 +72,7 @@
     "Family users can initiate account deletion inside the app",
     "An external account deletion request resource is publicly reachable",
     "Production exposes an explicit offline state and keyboard focus visibility",
+    "New and recovered passwords require at least 8 characters while existing login compatibility is preserved",
     "Native App Store or Play Store readiness is not claimed until native packaging exists"
   ]
 }
