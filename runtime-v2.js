@@ -15,9 +15,11 @@ async function getProfile(force=false){const {data:{session}}=await sb.auth.getS
 function clearProfile(){profile=null;profileUserId=null;profilePromise=null}
 function currentProfile(){return profile}
 function hasRole(...roles){return !!profile?.active&&roles.includes(profile.role)}
-sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||!session)clearProfile();else if(profileUserId&&profileUserId!==session.user.id)clearProfile()});
+function notify(event,session){window.dispatchEvent(new CustomEvent('mountain:auth',{detail:{event,user_id:session?.user?.id||null}}))}
+sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||!session){clearProfile();notify(event,null);return}if(profileUserId&&profileUserId!==session.user.id)clearProfile();setTimeout(()=>getProfile(true).then(()=>notify(event,session)).catch(()=>notify(event,session)),0)});
 async function role(){return(await getProfile())?.role||null}
 async function isAdmin(){return(await role())==='admin'}
 async function isStaff(){return['admin','teacher'].includes(await role())}
 window.MountainRuntime=Object.freeze({URL,KEY,sb,esc,friendlyError,isNetworkError,inferMime,getProfile,currentProfile,clearProfile,hasRole,role,isAdmin,isStaff,version:'R5-FORENSIC'});
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>getProfile().catch(()=>{}),0));
 })();
