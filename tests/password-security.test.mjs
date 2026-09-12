@@ -4,8 +4,10 @@ import fs from 'node:fs';
 
 const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
 const access=read('access-v6.js');
+const guard=JSON.parse(read('RELEASE_GUARD.json'));
 
 test('new family accounts require at least 8 characters',()=>{
+  assert.equal(guard.architecture.auth.minimum_new_or_recovered_password_length,8);
   assert.ok(access.includes("signup?8:6"));
   assert.ok(access.includes('contraseña de al menos 8 caracteres'));
 });
@@ -16,5 +18,6 @@ test('password recovery requires at least 8 characters',()=>{
 });
 
 test('existing accounts retain login compatibility',()=>{
+  assert.equal(guard.architecture.auth.legacy_login_compatibility_minimum,6);
   assert.ok(access.includes("loginMinimum=mode==='signup-family'?8:6"));
 });
