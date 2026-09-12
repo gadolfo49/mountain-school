@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const base=new URL('../',import.meta.url);
+const read=p=>fs.readFileSync(new URL(p,base),'utf8');
+const exists=p=>fs.existsSync(new URL(p,base));
 const files={
- runtime:read('runtime-v2.js'),network:read('network-guard-v1.js'),app:read('app-v3.js'),gate:read('admin-gate.js'),access:read('access-v6.js'),users:read('admin-users-v1.js'),adminData:read('admin-data-v1.js'),docs:read('admin-documents-v1.js'),familyDocs:read('family-documents-v1.js'),school:read('school-admin-v1.js'),academic:read('academic-v2.js'),guide:read('mounty-guide-v1.js'),teacher:read('teacher-experience-v1.js'),notifications:read('notifications-v1.js'),accountControls:read('account-controls-v1.js'),finalFlow:read('final-flow-v1.js'),a11y:read('accessibility-v1.css'),privacy:read('privacy.html'),deletion:read('account-deletion.html'),sw:read('sw.js'),html:read('index.html')
+ runtime:read('runtime-v2.js'),network:read('network-guard-v1.js'),app:read('app-v3.js'),gate:read('admin-gate.js'),access:read('access-v6.js'),users:read('admin-users-v1.js'),adminData:read('admin-data-v1.js'),docs:read('admin-documents-v1.js'),familyDocs:read('family-documents-v1.js'),school:read('school-admin-v1.js'),academic:read('academic-v2.js'),guide:read('mounty-guide-v1.js'),teacher:read('teacher-experience-v1.js'),notifications:read('notifications-v1.js'),accountControls:read('account-controls-v1.js'),finalFlow:read('final-flow-v1.js'),a11y:read('styles-a11y-v1.css'),privacy:read('privacy.html'),deletion:read('account-deletion.html'),sw:read('sw.js'),html:read('index.html')
 };
 const manifest=JSON.parse(read('manifest.webmanifest'));
 const guard=JSON.parse(read('RELEASE_GUARD.json'));
@@ -33,14 +35,18 @@ add('Mounty unified audience flow invariant',()=>assert.equal(guard.architecture
 add('R5.3 marker',contains('html','MF-R5.3-PRINCIPAL-AUDIT-20260912'));
 add('Supabase dependency pinned',contains('html','@supabase/supabase-js@2.116.0'));
 add('runtime loads before app',()=>assert.ok(files.html.indexOf('runtime-v2.js')<files.html.indexOf('app-v3.js')));
-add('legacy auth absent',notContains('html','auth-v5.js'));
+add('legacy auth absent from shell',notContains('html','auth-v5.js'));
 add('retired admin endpoint absent from shell',notContains('html','mountain-admin-simple'));
 add('temporary Mounty QA endpoint absent from shell',notContains('html','mounty-qa-temp'));
 add('temporary role QA endpoint absent from shell',notContains('html','final-role-qa-temp'));
+add('obsolete auth-v4 physically removed',()=>assert.equal(exists('auth-v4.js'),false));
+add('obsolete auth-v5 physically removed',()=>assert.equal(exists('auth-v5.js'),false));
+add('obsolete app-v2 physically removed',()=>assert.equal(exists('app-v2.js'),false));
+add('obsolete family prototype physically removed',()=>assert.equal(exists('family/index.html'),false));
 add('privacy link before sign in',contains('html','privacy.html'));
 add('account deletion link before sign in',contains('html','account-deletion.html'));
 add('account controls loaded',contains('html','account-controls-v1.js?v=20260912-r5-3'));
-add('accessibility layer loaded',contains('html','accessibility-v1.css?v=20260912-r5-3'));
+add('accessibility layer loaded',contains('html','styles-a11y-v1.css?v=20260912-r5-3'));
 add('offline status element',contains('html','id="offlineBanner"'));
 add('dialog semantic',contains('html','aria-modal="true"'));
 add('skip link',contains('html','Saltar al contenido'));
@@ -97,8 +103,9 @@ add('offline network listener',contains('network',"addEventListener('offline'"))
 add('online network listener',contains('network',"addEventListener('online'"));
 add('focus-visible accessibility style',contains('a11y',':focus-visible'));
 add('reduced motion accessibility style',contains('a11y','prefers-reduced-motion'));
+add('forced colors accessibility style',contains('a11y','forced-colors'));
 add('attachment signed read',contains('finalFlow',"action:'signed_read'"));add('attachment Safari tab',contains('finalFlow',"window.open('about:blank'"));
 add('network rejected promises',contains('network','unhandledrejection'));add('PWA standalone',()=>assert.equal(manifest.display,'standalone'));
-add('R5.3 service worker cache',contains('sw','mountain-family-shell-r5-3-principal-audit-20260912'));add('SW caches runtime',contains('sw',"'./runtime-v2.js'"));add('SW caches account controls',contains('sw',"'./account-controls-v1.js'"));add('SW caches privacy page',contains('sw',"'./privacy.html'"));add('SW excludes Supabase',contains('sw',"hostname.includes('supabase.co')"));add('SW no legacy auth',notContains('sw','auth-v5.js'));
+add('R5.3 service worker cache',contains('sw','mountain-family-shell-r5-3-principal-audit-20260912'));add('SW caches runtime',contains('sw',"'./runtime-v2.js'"));add('SW caches account controls',contains('sw',"'./account-controls-v1.js'"));add('SW caches privacy page',contains('sw',"'./privacy.html'"));add('SW caches a11y stylesheet',contains('sw',"'./styles-a11y-v1.css'"));add('SW excludes Supabase',contains('sw',"hostname.includes('supabase.co')"));add('SW no legacy auth',notContains('sw','auth-v5.js'));
 for(const [name,source] of Object.entries(files))if(!['html','sw','a11y','privacy','deletion'].includes(name))add(`${name} no malformed quote entity`,()=>assert.equal(/&quot(?!;)/.test(source),false));
 for(const [name,fn] of contracts)test(name,fn);
