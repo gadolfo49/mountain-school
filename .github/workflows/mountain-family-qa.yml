@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run 100 integration and security contract tests
+      - name: Run 110 integration and security contract tests
         run: node --test tests/mountain-family.integration.test.mjs
       - name: Wait for GitHub Pages deployment
         run: sleep 55
