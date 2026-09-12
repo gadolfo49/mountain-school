@@ -4,12 +4,13 @@ import fs from 'node:fs';
 
 const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
 const guide=read('mounty-guide-v1.js');
+const assist=read('mounty-assist-v1.js');
 const finalFlow=read('final-flow-v1.js');
 const html=read('index.html');
 const sw=read('sw.js');
 const guard=JSON.parse(read('RELEASE_GUARD.json'));
 
-test('R5.5 managed access marker is published',()=>assert.ok(html.includes('MF-R5.5-MANAGED-ACCESS-20260912')));
+test('R5.6 Mounty Text Assist marker is published',()=>assert.ok(html.includes('MF-R5.6-MOUNTY-TEXT-ASSIST-20260912')));
 test('release guard protects all five audience levels',()=>assert.deepEqual(guard.architecture.communication_audiences,['all_families','cycle','classroom','single_student','selected_students']));
 test('Mounty exposes whole community',()=>assert.ok(guide.includes('Toda la comunidad')));
 test('Mounty exposes cycle',()=>assert.ok(guide.includes('Un ciclo')));
@@ -20,6 +21,12 @@ test('single student is normalized to selected_students backend model',()=>asser
 test('single student requires explicit student selection',()=>assert.ok(guide.includes('Selecciona un estudiante.')));
 test('dashboard Crear con Mounty is intercepted by unified flow',()=>assert.ok(finalFlow.includes("['broadcast','mountyCompose']")));
 test('broadcast is intercepted by unified flow',()=>assert.ok(finalFlow.includes("['broadcast','mountyCompose']")));
-test('media evidence is intercepted by unified flow',()=>assert.ok(finalFlow.includes("a==='media'")));
-test('service worker keeps R5.5 managed access release',()=>assert.ok(sw.includes('mountain-family-shell-r5-5-managed-access-20260912')));
+test('media evidence prefers Mounty Text Assist',()=>assert.ok(finalFlow.includes('window.MountyAssist?.evidence')));
+test('internal Mounty evidence button is intercepted by Text Assist',()=>assert.ok(assist.includes("closest?.('#mgEvidence')")));
+test('evidence can draft before recipient validation',()=>assert.ok(assist.indexOf("invoke('mounty-compose'")<assist.indexOf("recipientCount(readAudience())")));
+test('evidence shows draft before sharing',()=>assert.ok(assist.includes('Preparar texto con Mounty')&&assist.includes('Compartir ahora')));
+test('zero recipients only disable sharing',()=>assert.ok(assist.includes('Puedes seguir preparando el texto')&&assist.includes('send.disabled=count<1')));
+test('service worker keeps R5.6 text assist release',()=>assert.ok(sw.includes('mountain-family-shell-r5-6-mounty-text-assist-20260912')));
 test('human review remains mandatory',()=>assert.equal(guard.architecture.mounty.human_approval_required,true));
+test('text assist invariant is protected',()=>assert.equal(guard.architecture.mounty.text_assist_in_narrative_forms,true));
+test('evidence drafting is independent of recipient availability',()=>assert.equal(guard.architecture.mounty.evidence_draft_independent_of_recipient_availability,true));
