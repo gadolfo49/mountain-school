@@ -1,5 +1,5 @@
 {
-  "release": "MF-R5.1-MOUNTY-RELIABILITY-20260912",
+  "release": "MF-R5.2-AUDIENCE-UNIFIED-20260912",
   "status": "protected-baseline",
   "public_url": "https://gadolfo49.github.io/mountain-school/",
   "architecture": {
@@ -10,6 +10,7 @@
       "family_registration": "mountain-register-cors",
       "shared_runtime": "runtime-v2.js"
     },
+    "communication_audiences": ["all_families", "cycle", "classroom", "single_student", "selected_students"],
     "mounty": {
       "compose_version": 5,
       "agent_version": 8,
@@ -19,7 +20,8 @@
       "human_approval_required": true,
       "strict_context_grounding": true,
       "structured_error_reference": true,
-      "retry_transient_ai_failures": true
+      "retry_transient_ai_failures": true,
+      "single_unified_audience_flow": true
     }
   },
   "forbidden_frontend_dependencies": [
@@ -36,6 +38,9 @@
     "final-role-qa-temp"
   ],
   "required_invariants": [
+    "Admin communication supports whole community, cycle, grade, one student and selected students",
+    "Teacher communication supports grade, one student and selected students only inside assigned classrooms",
+    "All dashboard communication entry points route through the same Mounty audience flow",
     "Mounty never sends AI output without human review",
     "Mounty UI never exposes the raw Supabase non-2xx error string",
     "Mounty retries transient upstream AI failures",
