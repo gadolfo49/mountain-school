@@ -1,5 +1,5 @@
 {
-  "release": "MF-R5.3-PRINCIPAL-AUDIT-20260912",
+  "release": "MF-R5.5-MANAGED-ACCESS-20260912",
   "status": "protected-baseline",
   "public_url": "https://gadolfo49.github.io/mountain-school/",
   "architecture": {
@@ -9,10 +9,16 @@
     "grades": ["Maternal", "Infantes", "Párvulos", "Pre-Kínder", "Kínder", "Preprimario"],
     "auth": {
       "admin": "mountain-admin-pin",
-      "family_registration": "mountain-register-cors",
+      "family_teacher_provisioning": "administrator-only",
+      "public_family_self_registration": false,
+      "retired_registration_endpoint": "mountain-register-cors",
       "shared_runtime": "runtime-v2.js",
       "minimum_new_or_recovered_password_length": 8,
-      "legacy_login_compatibility_minimum": 6
+      "legacy_login_compatibility_minimum": 6,
+      "temporary_password_required_change": true,
+      "admin_can_reset_temporary_password": true,
+      "user_can_change_own_password": true,
+      "admin_can_revoke_access_without_deleting_history": true
     },
     "branding": {
       "official_logo_192": "assets/mountain-logo-192.png",
@@ -48,19 +54,27 @@
     "auth-v4.js",
     "auth-v5.js",
     "app-v2.js",
+    "signup-family",
     "mountain-admin-simple",
-    "mountain-register'",
     "mounty-qa-temp",
     "final-role-qa-temp"
   ],
   "retired_edge_functions_must_return_410": [
     "mountain-admin-simple",
     "mountain-register",
+    "mountain-register-cors",
     "mounty-qa-temp",
     "final-role-qa-temp"
   ],
   "required_invariants": [
     "Official Mountain Creativity School logo remains the application brand asset",
+    "Family and teacher accounts are created only by administration",
+    "No public family self-registration is available in the production shell",
+    "Administrator can create family or teacher access with a temporary password",
+    "Temporary passwords must be replaced on first successful login",
+    "Administrator can reset a temporary password without seeing the user's personal password",
+    "Administrator can revoke access without deleting historical academic records",
+    "Family and teacher users can change their own password from the account controls",
     "Admin communication supports whole community, cycle, grade, one student and selected students",
     "Teacher communication supports grade, one student and selected students only inside assigned classrooms",
     "All dashboard communication entry points route through the same Mounty audience flow",
