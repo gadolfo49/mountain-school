@@ -1,0 +1,19 @@
+name: MountainTransporte
+options:
+  bundleIdPrefix: com.mountaincreativityschool
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  MountainTransporte:
+    type: application
+    platform: iOS
+    sources: [MountainTransporte]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mountaincreativityschool.transporte
+        SWIFT_VERSION: 5.0
+        INFOPLIST_KEY_CFBundleDisplayName: Mountain Transporte
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: Mountain Transporte usa la ubicación del autobús para mostrar su recorrido escolar en tiempo real.
+        INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription: Mountain Transporte necesita la ubicación durante el recorrido aun con la pantalla bloqueada para mantener informadas a las familias.
+        INFOPLIST_KEY_UIBackgroundModes: location
+        CODE_SIGN_STYLE: Automatic
