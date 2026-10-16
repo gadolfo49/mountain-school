@@ -1,0 +1,55 @@
+{
+  "project": "Agente Journals",
+  "version": "0.1.0",
+  "phase": "foundation",
+  "infrastructure": {
+    "frontend": "Next.js + TypeScript",
+    "database": "PostgreSQL (Neon)",
+    "hosting": "Vercel",
+    "documentStorage": "Private Google Drive",
+    "ai": "OpenAI API"
+  },
+  "collections": [
+    "works",
+    "versions",
+    "sources",
+    "journals",
+    "submissions",
+    "reviews",
+    "tasks",
+    "audit_events"
+  ],
+  "workTypes": [
+    "scientific_article",
+    "book",
+    "chapter",
+    "novel",
+    "essay",
+    "research_report"
+  ],
+  "agents": [
+    "coordinator",
+    "cataloguer",
+    "quality_reviewer",
+    "journal_matcher",
+    "editorial_adapter",
+    "citation_checker",
+    "research_ethics",
+    "submission_tracker",
+    "peer_review_assistant",
+    "literary_editor",
+    "impact_analyst"
+  ],
+  "policies": {
+    "humanApprovalFor": [
+      "submit",
+      "publish",
+      "send_email",
+      "pay",
+      "sign"
+    ],
+    "noSecretsInGit": true,
+    "rawManuscriptsInPublicRepo": false,
+    "traceability": true
+  }
+}
